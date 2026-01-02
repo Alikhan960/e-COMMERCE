@@ -1,77 +1,78 @@
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("--- E-COMMERCE PLATFORM DEMO ---");
+        // Data pool: Lists to organize products, shoppers, and orders
+        List<Product> products = new ArrayList<>();
+        products.add(new PhysicalProduct("P001", "Laptop", 1200.0, "Electronics", 2.5));
+        products.add(new PhysicalProduct("P002", "Book", 20.0, "Books", 0.5));
+        products.add(new DigitalProduct("P003", "E-Book", 10.0, "Books", "PDF"));
 
-        // 1. Create Instances
-        System.out.println("\n--- 1. Creating Objects ---");
+        List<Shopper> shoppers = new ArrayList<>();
+        shoppers.add(new Shopper("S001", "Alice", "alice@email.com"));
+        shoppers.add(new Shopper("S002", "Bob", "bob@email.com"));
 
+        List<Order> orders = new ArrayList<>();
+        orders.add(new Order("O001", shoppers.get(0), Arrays.asList(products.get(0), products.get(1))));
+        orders.add(new Order("O002", shoppers.get(1), Arrays.asList(products.get(2))));
 
-        Product laptop = new Product(101, "Gaming Laptop", 1200.00);
-        Product mouse = new Product(102, "Wireless Mouse", 25.50);
-        Product keyboard = new Product(103, "Mechanical Keyboard", 120.00);
+        // Display full data pool
+        System.out.println("--- Full Products ---");
+        products.forEach(System.out::println);
+        System.out.println("\n--- Full Shoppers ---");
+        shoppers.forEach(System.out::println);
+        System.out.println("\n--- Full Orders ---");
+        orders.forEach(System.out::println);
 
+        // Searching: Find products by name
+        String searchName = "Laptop";
+        System.out.println("\n--- Searching Products by Name: " + searchName + " ---");
+        products.stream()
+                .filter(p -> p.getName().equalsIgnoreCase(searchName))
+                .forEach(System.out::println);
 
-        Shopper shopperA = new Shopper(1, "Alikhan Yertaiuly", "alikhan@shop.com");
-        Shopper shopperB = new Shopper(2, "Arman Satybaldy", "arman@shop.com");
+        // Filtering: Products in "Books" category
+        System.out.println("\n--- Filtering Products by Category: Books ---");
+        products.stream()
+                .filter(p -> p.getCategory().equalsIgnoreCase("Books"))
+                .forEach(System.out::println);
 
+        // Sorting: Products by price (ascending)
+        System.out.println("\n--- Sorting Products by Price (Ascending) ---");
+        products.sort(Comparator.comparingDouble(Product::getPrice));
+        products.forEach(System.out::println);
 
-        Order order1 = new Order(1001, shopperA, laptop, 1);
-        Order order2 = new Order(1002, shopperB, mouse, 3);
-        Order order3 = new Order(1003, shopperA, keyboard, 2);
+        // Searching: Find orders by shopper ID
+        String shopperId = "S001";
+        System.out.println("\n--- Searching Orders by Shopper ID: " + shopperId + " ---");
+        orders.stream()
+                .filter(o -> o.getShopper().getId().equals(shopperId))
+                .forEach(System.out::println);
 
+        // Filtering: Orders with total > $100
+        System.out.println("\n--- Filtering Orders by Total > $100 ---");
+        orders.stream()
+                .filter(o -> o.getTotal() > 100)
+                .forEach(System.out::println);
 
-        // 2. Output them to console
-        System.out.println("\n--- 2. Output and Getter/Setter Demo ---");
+        // Sorting: Orders by total (descending)
+        System.out.println("\n--- Sorting Orders by Total (Descending) ---");
+        orders.sort(Comparator.comparingDouble(Order::getTotal).reversed());
+        orders.forEach(System.out::println);
 
-        shopperA.printWelcomeMessage(); // example method
-        laptop.displayProductDetails();
+        // Equality checks (demonstrating overrides)
+        System.out.println("\n--- Equality Checks ---");
+        Product prod1 = new PhysicalProduct("P001", "Laptop", 1200.0, "Electronics", 2.5);
+        Product prod2 = new PhysicalProduct("P001", "Laptop", 1200.0, "Electronics", 2.5);
+        System.out.println("Products equal? " + prod1.equals(prod2));
 
-        // Demonstrating setter: change price of mouse and check with getter
-        System.out.println("Old Mouse Price: $" + mouse.getPrice());
-        mouse.setPrice(19.99); // using setter
-        System.out.println("New Mouse Price: $" + mouse.getPrice()); // Используем геттер
+        Shopper shop1 = new Shopper("S001", "Alice", "alice@email.com");
+        Shopper shop2 = new Shopper("S001", "Alice", "alice@email.com");
+        System.out.println("Shoppers equal? " + shop1.equals(shop2));
 
-        // Demostrate zakaz
-        order1.displayOrderSummary();
-        order2.displayOrderSummary();
-
-        // Demonstrate change of zakaz: changing number in order3
-        System.out.println("\n--- Order 3 BEFORE Change ---");
-        order3.displayOrderSummary();
-
-        System.out.println("Changing quantity of keyboard from 2 to 1...");
-        order3.setQuantity(1); // using setter that auto recounting totalAmount
-
-        System.out.println("\n--- Order 3 AFTER Change ---");
-        order3.displayOrderSummary();
-
-
-        // 3. Compare multiple objects
-        System.out.println("\n--- 3. Object Comparison ---");
-
-        // Compare примитивных attribute
-        System.out.println("Is Laptop more expensive than Keyboard?");
-        if (laptop.getPrice() > keyboard.getPrice()) {
-            System.out.println("Yes, $" + laptop.getPrice() + " > $" + keyboard.getPrice());
-        } else {
-            System.out.println("No, $" + laptop.getPrice() + " <= $" + keyboard.getPrice());
-        }
-
-        System.out.println("\nDoes Order 1 and Order 2 belong to the same shopper?");
-        // compare objects Shopper by their id
-        if (order1.getCustomer().getShopperId() == order2.getCustomer().getShopperId()) {
-            System.out.println("Yes, they have the same Shopper ID: " + order1.getCustomer().getShopperId());
-        } else {
-            System.out.println("No, Shopper IDs are different: "
-                    + order1.getCustomer().getShopperId() + " vs " + order2.getCustomer().getShopperId());
-        }
-
-        System.out.println("\nDoes Order 1 and Order 3 belong to the same shopper?");
-        // compare objects Shopper (Shopper A)
-        if (order1.getCustomer() == order3.getCustomer()) { // Comparing links to the same object ShopperA
-            System.out.println("Yes, the orders are linked to the exact same Shopper object.");
-        } else {
-            System.out.println("No, the orders are linked to different Shopper objects.");
-        }
+        Order ord1 = new Order("O001", shop1, Arrays.asList(prod1));
+        Order ord2 = new Order("O001", shop2, Arrays.asList(prod2));
+        System.out.println("Orders equal? " + ord1.equals(ord2));
     }
 }

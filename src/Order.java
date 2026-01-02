@@ -1,65 +1,50 @@
-public class Order {
-    // 1. Attributes (Fields)
-    private int orderId;
-    private Shopper customer; // link to object Shopper
-    private Product item;     // link to object Product
-    private int quantity;
-    private double totalAmount;
+import java.util.List;
+import java.util.Objects;
 
-    // 2. Constructor
-    public Order(int orderId, Shopper customer, Product item, int quantity) {
-        this.orderId = orderId;
-        this.customer = customer;
-        this.item = item;
-        this.quantity = quantity;
-        // calculate sum when making zakaz
-        calculateTotal();
+// Data abstraction: Class encapsulates order logic
+public class Order implements Entity {
+    // Encapsulation: Private fields with getters/setters
+    private String id;
+    private Shopper shopper;
+    private List<Product> products;
+    private double total;
+
+    public Order(String id, Shopper shopper, List<Product> products) {
+        this.id = id;
+        this.shopper = shopper;
+        this.products = products;
+        this.total = products.stream().mapToDouble(Product::getPrice).sum();
     }
 
-    // 3. Getter Methods
-    public int getOrderId() {
-        return orderId;
+    public String getId() { return id; }
+    public Shopper getShopper() { return shopper; }
+    public List<Product> getProducts() { return products; }
+    public double getTotal() { return total; }
+
+    // Polymorphism: Override displayDetails from Entity
+    @Override
+    public void displayDetails() {
+        System.out.println("Order ID: " + id + ", Shopper: " + shopper.getName() + ", Total: $" + total);
     }
 
-    public Shopper getCustomer() {
-        return customer;
+    // Override toString(): Readable string
+    @Override
+    public String toString() {
+        return "Order{id='" + id + "', shopper='" + shopper.getName() + "', products=" + products.size() + ", total=$" + total + "}";
     }
 
-    public Product getItem() {
-        return item;
+    // Override equals(): Compare based on ID
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Order order = (Order) obj;
+        return Objects.equals(id, order.id);
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public double getTotalAmount() {
-        return totalAmount;
-    }
-
-    // 4. Setter Methods
-    // setter for changing number of. after changing have to recount
-    public void setQuantity(int quantity) {
-        if (quantity > 0) {
-            this.quantity = quantity;
-            calculateTotal(); // recount
-        } else {
-            System.out.println("Error: Quantity must be positive.");
-        }
-    }
-
-    // 5. Other Methods - calculate sum
-    public void calculateTotal() {
-        // receive price of product by getter
-        this.totalAmount = this.quantity * this.item.getPrice();
-    }
-
-    // 6. Output Method
-    public void displayOrderSummary() {
-        System.out.println("--- Order #" + orderId + " Summary ---");
-        System.out.println("Customer: " + customer.getName() + " (" + customer.getEmail() + ")");
-        System.out.println("Item: " + item.getName() + " x " + quantity);
-        System.out.println("Unit Price: $" + item.getPrice());
-        System.out.printf("Total Amount: $%.2f%n", totalAmount);
+    // Override hashCode(): Based on ID
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

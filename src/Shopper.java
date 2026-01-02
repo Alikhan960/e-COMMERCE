@@ -1,40 +1,48 @@
-public class Shopper {
-    // 1. Attributes (Fields)
-    private int shopperId;
-    private String name;
+import java.util.Objects;
+
+// Inheritance: Extends User for shopper-specific details
+public class Shopper extends User {
+    // Encapsulation: Private fields with getters/setters
     private String email;
 
-    // 2. Constructor
-    public Shopper(int shopperId, String name, String email) {
-        this.shopperId = shopperId;
-        this.name = name;
+    public Shopper(String id, String name, String email) {
+        super(id, name);
         this.email = email;
     }
 
-    // 3. Getter Methods
-    public int getShopperId() {
-        return shopperId;
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    // Polymorphism: Override abstract method from User
+    @Override
+    public String getType() {
+        return "Shopper";
     }
 
-    public String getName() {
-        return name;
+    // Polymorphism: Override displayDetails from Entity
+    @Override
+    public void displayDetails() {
+        super.displayDetails();
+        System.out.println("Email: " + email);
     }
 
-    public String getEmail() {
-        return email;
+    // Override toString(): Include shopper details
+    @Override
+    public String toString() {
+        return "Shopper{id='" + getId() + "', name='" + getName() + "', type='" + getType() + "', email='" + email + "'}";
     }
 
-    // 4. Setter Methods
-    public void setName(String name) {
-        this.name = name;
+    // Override equals(): Check super equality and email
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) return false;
+        Shopper shopper = (Shopper) obj;
+        return Objects.equals(email, shopper.email);
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    // 5. Other Methods
-    public void printWelcomeMessage() {
-        System.out.println("Welcome back, " + name + " (ID: " + shopperId + ")!");
+    // Override hashCode(): Include email
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), email);
     }
 }

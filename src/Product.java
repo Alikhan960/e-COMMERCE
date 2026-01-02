@@ -1,41 +1,56 @@
-public class Product {
-    // 1. Attributes(Fields)
-    private int productId;
+import java.util.Objects;
+
+// Inheritance: Abstract base class for products (subclasses like PhysicalProduct inherit from this)
+// Data abstraction: Abstract class hides common product logic
+public abstract class Product implements Entity {
+    // Encapsulation: Private fields with getters/setters
+    private String id;
     private String name;
     private double price;
+    private String category;
 
-    // 2. Constructor to create object
-    public Product(int productId, String name, double price) {
-        this.productId = productId;
+    public Product(String id, String name, double price, String category) {
+        this.id = id;
         this.name = name;
         this.price = price;
+        this.category = category;
     }
 
-    // 3. Getter Methods to read private attribute
-    public int getProductId() {
-        return productId;
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+
+    // Polymorphism: Abstract method for subclasses to define specifics
+    public abstract String getProductType();
+
+    // Polymorphism: Override displayDetails from Entity
+    @Override
+    public void displayDetails() {
+        System.out.println("Product: " + name + " ($" + price + ", Category: " + category + ", Type: " + getProductType() + ")");
     }
 
-    public String getName() {
-        return name;
+    // Override toString(): Readable string
+    @Override
+    public String toString() {
+        return "Product{id='" + id + "', name='" + name + "', price=" + price + ", category='" + category + "', type='" + getProductType() + "'}";
     }
 
-    public double getPrice() {
-        return price;
+    // Override equals(): Compare based on ID
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Product product = (Product) obj;
+        return Objects.equals(id, product.id);
     }
 
-    // 4. Setter Methods to change private attribute
-    // onlly the price
-    public void setPrice(double price) {
-        if (price >= 0) {
-            this.price = price;
-        } else {
-            System.out.println("Error: Price cannot be negative.");
-        }
-    }
-
-    // 5. Other Methods
-    public void displayProductDetails() {
-        System.out.println("Product ID: " + productId + ", Name: " + name + ", Price: $" + price);
+    // Override hashCode(): Based on ID
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
