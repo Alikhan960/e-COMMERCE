@@ -6,7 +6,7 @@ public class Main {
         db.createTables();
 
         // 1. DB products
-        System.out.println("\n--- Добавление новых товаров ---");
+        System.out.println("\nCreating new products");
         db.saveProduct("P001", "Laptop", 1200.0, "Electronics");
         db.saveProduct("P002", "Mechanical Keyboard", 150.0, "Accessories");
         db.saveProduct("P003", "Gaming Monitor", 300.0, "Electronics");
@@ -23,7 +23,7 @@ public class Main {
         db.printAllProductsFromDB();
 
         // 2. DB shoppers
-        System.out.println("\n=== Тестирование Shoppers ===");
+        System.out.println("\n=== Testing Shoppers ===");
         db.saveShopper("Alikhan", "alikhan@example.com");
         db.saveShopper("Arman", "arman@mail.kz");
         db.saveShopper("Sergey", "sergey_dev@gmail.com");
@@ -32,7 +32,7 @@ public class Main {
         db.printAllShoppersFromDB();
 
         // 3. just java classes
-        System.out.println("\n--- Работа с Java-объектами (через интерфейс Entity) ---");
+        System.out.println("\n--- Working with Java objects (via the Entity interface) ---");
         User user = new User("U01", "Alikhan960", "Admin");
         user.displayDetails();
 
