@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Commerce Admin Panel</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; background: #f4f4f4; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .form-group { margin-bottom: 15px; }
+        input { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+        button { padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #218838; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Management System (E-Commerce)</h1>
+
+    <h3>Add New Product</h3>
+    <div class="form-group">
+        <input type="text" id="p_id" placeholder="ID (например, P005)">
+        <input type="text" id="p_name" placeholder="Product Name">
+        <input type="number" id="p_price" placeholder="Price">
+        <input type="text" id="p_category" placeholder="Category">
+        <button onclick="addProduct()" style="margin-top: 10px;">Add Product</button>
+    </div>
+
+    <hr>
+
+    <h3>Product List</h3>
+    <button onclick="loadProducts()" style="background: #007bff;">Refresh List</button>
+    <table id="productTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:8080/products';
+
+    // Функция загрузки данных (GET)
+    async function loadProducts() {
+        const response = await fetch(API_URL);
+        const products = await response.json();
+        const tbody = document.querySelector('#productTable tbody');
+        tbody.innerHTML = '';
+
+        products.forEach(p => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${p.id}</td>
+                    <td>${p.name}</td>
+                    <td>$${p.price}</td>
+                    <td>${p.category}</td>
+                </tr>
+            `;
+        });
+    }
+
+    // Функция отправки данных (POST)
+    async function addProduct() {
+        const data = {
+            id: document.getElementById('p_id').value,
+            name: document.getElementById('p_name').value,
+            price: parseFloat(document.getElementById('p_price').value),
+            category: document.getElementById('p_category').value
+        };
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            alert('Product added!');
+            loadProducts(); // Обновляем список
+        } else {
+            alert('Error adding product');
+        }
+    }
+
+    // Загрузить при старте
+    loadProducts();
+</script>
+
+</body>
+</html>

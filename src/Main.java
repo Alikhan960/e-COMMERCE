@@ -1,42 +1,45 @@
-import java.util.*;
+import com.sun.net.httpserver.HttpServer;
+import controller.ProductHandler;
+import repository.IProductRepository;
+import repository.PostgresRepository;
+import service.ProductService;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
 public class Main {
     public static void main(String[] args) {
-        DBManager db = new DBManager();
-        db.createTables();
+        try {
+            // 1. Создаем репозиторий (Работа с БД)
+            IProductRepository repository = new PostgresRepository();
 
-        // 1. DB products
-        System.out.println("\nCreating new products");
-        db.saveProduct("P001", "Laptop", 1200.0, "Electronics");
-        db.saveProduct("P002", "Mechanical Keyboard", 150.0, "Accessories");
-        db.saveProduct("P003", "Gaming Monitor", 300.0, "Electronics");
-        db.saveProduct("P004", "Java Course", 50.0, "Education");
-        db.saveProduct("P005", "Wireless Mouse", 40.0, "Accessories");
+            // 2. Создаем сервис (Бизнес-логика + Лямбды)
+            ProductService productService = new ProductService(repository);
 
-        db.printAllProductsFromDB();
+            // 3. Добавим тестовые данные, если база пустая (через сервис)
+            if (productService.getAllProducts().isEmpty()) {
+                productService.addProduct("P001", "Gaming Laptop", 1500.0, "Electronics");
+                productService.addProduct("P002", "Wireless Mouse", 50.0, "Accessories");
+                System.out.println("[DB] Test data added.");
+            }
 
-        // update and delete to demonstrate CRUD
-        db.updatePrice("P001", 1100.0);
-        db.deleteProduct("P002"); // Удалим клавиатуру
+            // 4. Настройка сервера
+            HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-        System.out.println("\nList of products after changing");
-        db.printAllProductsFromDB();
+            // Регистрируем наш обработчик для пути /products
+            server.createContext("/products", new ProductHandler(productService));
 
-        // 2. DB shoppers
-        System.out.println("\n=== Testing Shoppers ===");
-        db.saveShopper("Alikhan", "alikhan@example.com");
-        db.saveShopper("Arman", "arman@mail.kz");
-        db.saveShopper("Sergey", "sergey_dev@gmail.com");
-        db.saveShopper("Aruzhan", "aru_star@list.ru");
+            server.setExecutor(null);
+            System.out.println("=====================================");
+            System.out.println("   E-COMMERCE SYSTEM IS RUNNING");
+            System.out.println("   URL: http://localhost:8080/products");
+            System.out.println("=====================================");
+            server.start();
 
-        db.printAllShoppersFromDB();
-
-        // 3. just java classes
-        System.out.println("\n--- Working with Java objects (via the Entity interface) ---");
-        User user = new User("U01", "Alikhan960", "Admin");
-        user.displayDetails();
-
-        Order order = new Order("OR-2024", "Arman_ID", 1500.0);
-        order.displayDetails();
+        } catch (IOException e) {
+            System.err.println("Failed to start server: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
